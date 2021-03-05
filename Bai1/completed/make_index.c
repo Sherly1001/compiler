@@ -76,6 +76,20 @@ word_list *load_word_list(const char *filename) {
     return stopw;
 }
 
+int is_mean_word(const char *word, word_list *mean_word) {
+    for (word_list *w = mean_word; w; w = w->next) {
+        if (!strncmp(w->word, word, strlen(word))) return 1;
+    }
+    return 0;
+}
+
+int is_stop_word(const char *word, word_list *stopw) {
+    for (word_list *w = stopw; w; w = w->next) {
+        if (!strncmp(w->word, word, strlen(word))) return 1;
+    }
+    return 0;
+}
+
 word_tree *load_word_tree(const char *filename, word_list *stopw, word_list *mean_name) {
     FILE *f = fopen(filename, "r");
     char s[200];
@@ -85,51 +99,30 @@ word_tree *load_word_tree(const char *filename, word_list *stopw, word_list *mea
     while (fgets(s, 200, f)) {
         int i = 0, j = 0;
         while (s[i]) {
-            if (isalpha(s[i])) {
-                j = i + 1;
-                while (isalpha(s[j]) || s[j] == '.') ++j;
-                
-                char tmp = s[j], word[20];
-                s[j] = '\0';
-                strcpy(word, s + i);
-                s[j] = tmp;
-
-                int word_type = 0; // 0 => none, 1 => mean_name, 2 => stopword
-
-                for (word_list *w = mean_name; w; w = w->next) {
-                    if (!strcmp(w->word, word)) {
-                        add_word(&wt, w->word, row, i + 1);
-                        word_type = 1;
-                        break;
-                    }
-                }
-
-                for (char *w = word; *w; ++w) {
-                    *w = tolower(*w);
-                }
-                if (word[j - i - 1] == '.') word[j - i - 1] = '\0';
-
-                if (word_type != 1) {
-                    for (word_list *w = stopw; w; w = w->next) {
-                        int is_same = 1;
-                        for (int i = 0; word[i]; ++i) {
-                            if (word[i] != w->word[i]) {
-                                is_same = 0;
-                                break;
-                            }
-                        }
-                        if (is_same) {
-                            word_type = 2;
-                        }
-                    }
-                }
-
-                if (word_type == 0) add_word(&wt, word, row, i + 1);
-                
-                i = j;
-            } else {
+            if (!isalpha(s[i])) {
                 ++i;
+                continue;
             }
+            j = i + 1;
+            while (isalpha(s[j]) || s[j] == '.') ++j;
+
+            char tmp = s[j], word[20];
+            s[j] = '\0';
+            strcpy(word, s + i);
+            s[j] = tmp;
+
+            if (is_mean_word(word, mean_name)) {
+                add_word(&wt, word, row, i + 1);
+                i = j;
+                continue;
+            }
+
+            for (char *w = word; *w; ++w) *w = tolower(*w);
+            if (word[j - i - 1] == '.') word[j - i - 1] = '\0';
+
+            if (!is_stop_word(word, stopw)) add_word(&wt, word, row, i + 1);
+
+            i = j;
         }
         ++row;
     }
@@ -148,13 +141,12 @@ void print_index(array *arr, int count) {
 }
 
 void show_index(word_tree *index) {
-    if (index) {
-        show_index(index->left);
-        printf("%s ", index->word);
-        print_index(index->arr, 0);
-        printf("\n");
-        show_index(index->right);
-    }
+    if (!index) return;
+    show_index(index->left);
+    printf("%s ", index->word);
+    print_index(index->arr, 0);
+    printf("\n");
+    show_index(index->right);
 }
 
 int main() {
