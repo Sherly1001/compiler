@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "reader.h"
 #include "charcode.h"
@@ -23,22 +24,65 @@ extern CharCode charCodes[];
 
 void skipBlank() {
   // TODO
+  while (charCodes[currentChar] == CHAR_SPACE && currentChar != EOF) readChar();
 }
 
 void skipComment() {
   // TODO
+  int last_is_time = charCodes[readChar()] == CHAR_TIMES;
+  while (!(charCodes[readChar()] == CHAR_RPAR && last_is_time)) {
+    if (currentChar == EOF) error(ERR_ENDOFCOMMENT, lineNo, colNo);
+    last_is_time = charCodes[currentChar] == CHAR_TIMES;
+  }
+  readChar();
 }
 
 Token* readIdentKeyword(void) {
   // TODO
+  int ln = lineNo, cn = colNo;
+  char s[MAX_IDENT_LEN + 1];
+  int i = 0;
+  while (charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT) {
+    s[i] = currentChar;
+    ++i;
+    if (i >= MAX_IDENT_LEN) error(ERR_IDENTTOOLONG, ln, cn);
+    readChar();
+  }
+  s[i] = '\0';
+
+  TokenType tkt = checkKeyword(s);
+  Token *tk = makeToken(tkt == TK_NONE ? TK_IDENT : tkt, ln, cn);
+  strcpy(tk->string, s);
+  
+  return tk;
 }
 
 Token* readNumber(void) {
   // TODO
+  Token *tk = makeToken(TK_NUMBER, lineNo, colNo);
+  int i = 0;
+  while (charCodes[currentChar] == CHAR_DIGIT) {
+    tk->string[i] = currentChar;
+    ++i;
+    readChar();
+  }
+  tk->string[i] = '\0';
+  return tk;
 }
 
 Token* readConstChar(void) {
   // TODO
+  int ln = lineNo, cn = colNo;
+  Token *token = makeToken(TK_CHAR, ln, cn);
+  token->string[0] = readChar();
+  if (charCodes[readChar()] == CHAR_SINGLEQUOTE) {
+    token->string[1] = '\0';
+    readChar();
+    return token;
+  } else {
+    error(ERR_INVALIDCHARCONSTANT, ln, cn);
+    return NULL;
+  }
 }
 
 Token* getToken(void) {
@@ -58,6 +102,72 @@ Token* getToken(void) {
     return token;
     // ....
     // TODO
+  case CHAR_MINUS:
+    token = makeToken(SB_MINUS, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_TIMES:
+    token = makeToken(SB_TIMES, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_SEMICOLON:
+    token = makeToken(SB_SEMICOLON, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_COLON:
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      readChar();
+      return makeToken(SB_ASSIGN, ln, cn);
+    }
+    token = makeToken(SB_COLON, ln, cn);
+    return token;
+  case CHAR_EXCLAIMATION:
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      readChar();
+      return makeToken(SB_NEQ, ln, cn);
+    } else {
+      error(ERR_INVALIDSYMBOL, ln, cn);
+    }
+  case CHAR_SINGLEQUOTE:
+    return readConstChar();
+  case CHAR_COMMA:
+    token = makeToken(SB_COMMA, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_PERIOD:
+    token = makeToken(SB_PERIOD, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_EQ:
+    token = makeToken(SB_EQ, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_GT:
+    token = makeToken(SB_GT, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_LT:
+    token = makeToken(SB_LT, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_LPAR:
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_TIMES) {
+      skipComment();
+      return getToken();
+    } else {
+      token = makeToken(SB_LPAR, ln, cn);
+      return token;
+    }
+  case CHAR_RPAR:
+    token = makeToken(SB_RPAR, lineNo, colNo);
+    readChar();
+    return token;
     // ....
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
