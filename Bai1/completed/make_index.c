@@ -8,7 +8,7 @@ typedef struct array {
     struct array *next;
 } array;
 
-int add_val(array **arr, int row, int col) {
+void add_val(array **arr, int row, int col) {
     if (*arr) {
         array *new = malloc(sizeof(array));
         new->row = row;
@@ -30,7 +30,7 @@ typedef struct word_tree {
     struct word_tree *right;
 } word_tree;
 
-char *add_word(word_tree **wl, const char *word, int row, int col) {
+void add_word(word_tree **wl, const char *word, int row, int col) {
     if (*wl) {
         int cmp = strcmp((*wl)->word, word);
         if (cmp == 0) add_val(&(*wl)->arr, row, col);
@@ -52,7 +52,7 @@ typedef struct word_list {
     struct word_list *next;
 } word_list;
 
-char *add_stopw(word_list **arr, const char *word) {
+void add_stopw(word_list **arr, const char *word) {
     if (*arr) {
         word_list *new = malloc(sizeof(word_list));
         new->word = malloc(sizeof(char) * 20);
