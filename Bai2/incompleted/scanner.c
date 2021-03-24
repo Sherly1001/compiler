@@ -61,7 +61,13 @@ Token* readNumber(void) {
   // TODO
   Token *tk = makeToken(TK_NUMBER, lineNo, colNo);
   int i = 0;
-  while (charCodes[currentChar] == CHAR_DIGIT) {
+  int flag = 0;
+  while (charCodes[currentChar] == CHAR_DIGIT || charCodes[currentChar] == CHAR_PERIOD) {
+    if (charCodes[currentChar] == CHAR_PERIOD) {
+      ++flag;
+      tk->tokenType = TK_FLOAT;
+      if (flag > 1) error(ERR_INVALIDSYMBOL, lineNo, colNo);
+    }
     tk->string[i] = currentChar;
     ++i;
     readChar();
@@ -97,18 +103,46 @@ Token* getToken(void) {
   case CHAR_LETTER: return readIdentKeyword();
   case CHAR_DIGIT: return readNumber();
   case CHAR_PLUS: 
-    token = makeToken(SB_PLUS, lineNo, colNo);
-    readChar(); 
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN_PLUS, ln, cn);
+      readChar();
+    } else {
+      token = makeToken(SB_PLUS, ln, cn);
+    }
     return token;
     // ....
     // TODO
   case CHAR_MINUS:
-    token = makeToken(SB_MINUS, lineNo, colNo);
+    ln = lineNo, cn = colNo;
     readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN_SUBTRACT, ln, cn);
+      readChar();
+    } else {
+      token = makeToken(SB_MINUS, ln, cn);
+    }
     return token;
   case CHAR_TIMES:
-    token = makeToken(SB_TIMES, lineNo, colNo);
+    ln = lineNo, cn = colNo;
     readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN_TIMES, ln, cn);
+      readChar();
+    } else {
+      token = makeToken(SB_TIMES, ln, cn);
+    }
+    return token;
+  case CHAR_SLASH:
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN_DIVIDE, ln, cn);
+      readChar();
+    } else {
+      token = makeToken(SB_SLASH, ln, cn);
+    }
     return token;
   case CHAR_SEMICOLON:
     token = makeToken(SB_SEMICOLON, lineNo, colNo);
@@ -168,6 +202,14 @@ Token* getToken(void) {
     token = makeToken(SB_RPAR, lineNo, colNo);
     readChar();
     return token;
+  case CHAR_LBRACKET:
+    token = makeToken(SB_OPEN_BRACKET, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_RBRACKET:
+    token = makeToken(SB_CLOSE_BRACKET, lineNo, colNo);
+    readChar();
+    return token;
     // ....
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
@@ -188,6 +230,7 @@ void printToken(Token *token) {
   case TK_NONE: printf("TK_NONE\n"); break;
   case TK_IDENT: printf("TK_IDENT(%s)\n", token->string); break;
   case TK_NUMBER: printf("TK_NUMBER(%s)\n", token->string); break;
+  case TK_FLOAT: printf("TK_FLOAT(%s)\n", token->string); break;
   case TK_CHAR: printf("TK_CHAR(\'%s\')\n", token->string); break;
   case TK_EOF: printf("TK_EOF\n"); break;
 
@@ -196,6 +239,7 @@ void printToken(Token *token) {
   case KW_TYPE: printf("KW_TYPE\n"); break;
   case KW_VAR: printf("KW_VAR\n"); break;
   case KW_INTEGER: printf("KW_INTEGER\n"); break;
+  case KW_FLOAT: printf("KW_FLOAT\n"); break;
   case KW_CHAR: printf("KW_CHAR\n"); break;
   case KW_ARRAY: printf("KW_ARRAY\n"); break;
   case KW_OF: printf("KW_OF\n"); break;
@@ -231,6 +275,12 @@ void printToken(Token *token) {
   case SB_RPAR: printf("SB_RPAR\n"); break;
   case SB_LSEL: printf("SB_LSEL\n"); break;
   case SB_RSEL: printf("SB_RSEL\n"); break;
+  case SB_ASSIGN_PLUS: printf("SB_ASSIGN_PLUS\n"); break;
+  case SB_ASSIGN_SUBTRACT: printf("SB_ASSIGN_SUBTRACT\n"); break;
+  case SB_ASSIGN_TIMES: printf("SB_ASSIGN_TIMES\n"); break;
+  case SB_ASSIGN_DIVIDE: printf("SB_ASSIGN_DIVIDE\n"); break;
+  case SB_OPEN_BRACKET: printf("SB_OPEN_BRACKET\n"); break;
+  case SB_CLOSE_BRACKET: printf("SB_CLOSE_BRACKET\n"); break;
   }
 }
 
