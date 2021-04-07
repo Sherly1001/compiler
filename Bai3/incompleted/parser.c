@@ -352,7 +352,25 @@ void compileAssignSt(void) {
   eat(TK_IDENT);
   if(lookAhead->tokenType == SB_LSEL)
   compileIndexes();
-  eat(SB_ASSIGN);
+  switch (lookAhead->tokenType) {
+  case SB_ASSIGN:
+    eat(SB_ASSIGN);
+    break;
+  case SB_ASSIGN_PLUS:
+    eat(SB_ASSIGN_PLUS);
+    break;
+  case SB_ASSIGN_SUBTRACT:
+    eat(SB_ASSIGN_SUBTRACT);
+    break;
+  case SB_ASSIGN_TIMES:
+    eat(SB_ASSIGN_TIMES);
+    break;
+  case SB_ASSIGN_DIVIDE:
+    eat(SB_ASSIGN_DIVIDE);
+    break;
+  default:
+    break;
+  }
   compileExpression();
   assert("Assign statement parsed ....");
 }

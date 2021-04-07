@@ -102,6 +102,10 @@ char *tokenToString(TokenType tokenType) {
   case SB_MINUS: return "\'-\'";
   case SB_TIMES: return "\'*\'";
   case SB_SLASH: return "\'/\'";
+  case SB_ASSIGN_PLUS: return "\'+=\'";
+  case SB_ASSIGN_SUBTRACT: return "\'-=\'";
+  case SB_ASSIGN_TIMES: return "\'*=\'";
+  case SB_ASSIGN_DIVIDE: return "\'/=\'";
   case SB_LPAR: return "\'(\'";
   case SB_RPAR: return "\')\'";
   case SB_LSEL: return "\'(.\'";

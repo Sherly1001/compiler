@@ -130,20 +130,44 @@ Token* getToken(void) {
   case CHAR_LETTER: return readIdentKeyword();
   case CHAR_DIGIT: return readNumber();
   case CHAR_PLUS: 
-    token = makeToken(SB_PLUS, lineNo, colNo);
-    readChar(); 
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN_PLUS, ln, cn);
+      readChar(); 
+    } else {
+      token = makeToken(SB_PLUS, lineNo, colNo);
+    }
     return token;
   case CHAR_MINUS:
-    token = makeToken(SB_MINUS, lineNo, colNo);
-    readChar(); 
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN_SUBTRACT, ln, cn);
+      readChar(); 
+    } else {
+      token = makeToken(SB_MINUS, lineNo, colNo);
+    }
     return token;
   case CHAR_TIMES:
-    token = makeToken(SB_TIMES, lineNo, colNo);
-    readChar(); 
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN_TIMES, ln, cn);
+      readChar(); 
+    } else {
+      token = makeToken(SB_TIMES, lineNo, colNo);
+    }
     return token;
   case CHAR_SLASH:
-    token = makeToken(SB_SLASH, lineNo, colNo);
-    readChar(); 
+    ln = lineNo, cn = colNo;
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN_DIVIDE, ln, cn);
+      readChar(); 
+    } else {
+      token = makeToken(SB_SLASH, lineNo, colNo);
+    }
     return token;
   case CHAR_LT:
     ln = lineNo;
@@ -292,6 +316,10 @@ void printToken(Token *token) {
   case SB_MINUS: printf("SB_MINUS\n"); break;
   case SB_TIMES: printf("SB_TIMES\n"); break;
   case SB_SLASH: printf("SB_SLASH\n"); break;
+  case SB_ASSIGN_PLUS: printf("SB_ASSIGN_PLUS\n"); break;
+  case SB_ASSIGN_SUBTRACT: printf("SB_ASSIGN_SUBTRACT\n"); break;
+  case SB_ASSIGN_TIMES: printf("SB_ASSIGN_TIMES\n"); break;
+  case SB_ASSIGN_DIVIDE: printf("SB_ASSIGN_DIVIDE\n"); break;
   case SB_LPAR: printf("SB_LPAR\n"); break;
   case SB_RPAR: printf("SB_RPAR\n"); break;
   case SB_LSEL: printf("SB_LSEL\n"); break;
