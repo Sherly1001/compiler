@@ -17,6 +17,7 @@ struct {
   {"TYPE", KW_TYPE},
   {"VAR", KW_VAR},
   {"INTEGER", KW_INTEGER},
+  {"FLOAT", KW_FLOAT},
   {"CHAR", KW_CHAR},
   {"ARRAY", KW_ARRAY},
   {"OF", KW_OF},
@@ -36,7 +37,7 @@ struct {
 
 int keywordEq(char *kw, char *string) {
   while ((*kw != '\0') && (*string != '\0')) {
-    if (*kw != *string) break;
+    if (*kw != toupper(*string)) break;
     kw ++; string ++;
   }
   return ((*kw == '\0') && (*string == '\0'));
@@ -63,6 +64,7 @@ char *tokenToString(TokenType tokenType) {
   case TK_NONE: return "None";
   case TK_IDENT: return "an identification";
   case TK_NUMBER: return "a number";
+  case TK_FLOAT: return "a floating point number";
   case TK_CHAR: return "a constant char";
   case TK_EOF: return "end of file";
 
@@ -71,6 +73,7 @@ char *tokenToString(TokenType tokenType) {
   case KW_TYPE: return "keyword TYPE";
   case KW_VAR: return "keyword VAR";
   case KW_INTEGER: return "keyword INTEGER";
+  case KW_FLOAT: return "keyword FLOAT";
   case KW_CHAR: return "keyword CHAR";
   case KW_ARRAY: return "keyword ARRAY";
   case KW_OF: return "keyword OF";
@@ -104,8 +107,14 @@ char *tokenToString(TokenType tokenType) {
   case SB_SLASH: return "\'/\'";
   case SB_LPAR: return "\'(\'";
   case SB_RPAR: return "\')\'";
-  case SB_LSEL: return "\'(.\'";
-  case SB_RSEL: return "\'.)\'";
+  
+  case SB_ASSIGN_PLUS: return "\'+=\'";
+  case SB_ASSIGN_SUBTRACT: return "\'-=\'";
+  case SB_ASSIGN_TIMES: return "\'*=\'";
+  case SB_ASSIGN_DIVIDE: return "\'/=\'";
+  case SB_OPEN_BRACKET: return "[";
+  case SB_CLOSE_BRACKET: return "]";
+  case SB_MODULUS: return "\'%%\'"; break;
   default: return "";
   }
 }
