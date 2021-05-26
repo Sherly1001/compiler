@@ -16,7 +16,7 @@ BEGIN
       CALL  WRITEI(N);
       CALL  WRITEI(S);  
       CALL  WRITEI(Z);
-      CALL  HANOI(N-1,6-S-Z,Z)
+      CALL  HANOI(N-1,6-S-Z,Z);
     END
 END;  (*END OF HANOI*)
 
