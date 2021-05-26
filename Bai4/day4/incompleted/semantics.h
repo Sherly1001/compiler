@@ -24,5 +24,6 @@ void checkFloatType(Type* type);
 void checkArrayType(Type* type);
 void checkBasicType(Type* type);
 void checkTypeEquality(Type* type1, Type* type2);
+void checkForIndex(Type* type);
 
 #endif

@@ -508,11 +508,11 @@ void compileForSt(void) {
 
   // check if the identifier is a variable
   var = checkDeclaredVariable(currentToken->string);
-  checkIntType(var->varAttrs->type);
+  checkForIndex(var->varAttrs->type);
   eat(SB_ASSIGN);
-  checkIntType(compileExpression());
+  checkForIndex(compileExpression());
   eat(KW_TO);
-  checkIntType(compileExpression());
+  checkForIndex(compileExpression());
   eat(KW_DO);
   compileStatement();
 }

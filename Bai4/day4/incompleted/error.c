@@ -8,14 +8,14 @@
 #include <stdlib.h>
 #include "error.h"
 
-#define NUM_OF_ERRORS 30
+#define NUM_OF_ERRORS 31
 
 struct ErrorMessage {
   ErrorCode errorCode;
   char *message;
 };
 
-struct ErrorMessage errors[30] = {
+struct ErrorMessage errors[31] = {
   {ERR_END_OF_COMMENT, "End of comment expected."},
   {ERR_IDENT_TOO_LONG, "Identifier too long."},
   {ERR_INVALID_CONSTANT_CHAR, "Invalid char constant."},
@@ -36,6 +36,7 @@ struct ErrorMessage errors[30] = {
   {ERR_INVALID_LVALUE, "Invalid lvalue in assignment."},
   {ERR_INVALID_ARGUMENTS, "Wrong arguments."},
   {ERR_INVALID_MODUL_OPERATOR, "Can\'t use modulos operator for float number."},
+  {ERR_FLOAT_FOR_INDEX, "Can\'t use real number index in FOR statement."},
   {ERR_UNDECLARED_IDENT, "Undeclared identifier."},
   {ERR_UNDECLARED_CONSTANT, "Undeclared constant."},
   {ERR_UNDECLARED_INT_CONSTANT, "Undeclared integer constant."},

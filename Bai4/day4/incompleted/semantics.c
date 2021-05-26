@@ -127,6 +127,13 @@ void checkCharType(Type* type) {
   else error(ERR_TYPE_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
 }
 
+void checkForIndex(Type* type) {
+  if ((type != NULL) && (type->typeClass == TP_INT)) return;
+  else if (type == NULL) error(ERR_TYPE_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
+  else if (type->typeClass == TP_FLOAT) error(ERR_FLOAT_FOR_INDEX, currentToken->lineNo, currentToken->colNo);
+  else error(ERR_TYPE_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
+}
+
 void checkBasicType(Type* type) {
   // TODO
   if ((type != NULL) && ((type->typeClass == TP_INT)
